@@ -1,0 +1,7 @@
+{
+    email derrick.ai.chuah6865@gmail.com
+}
+
+n8n.bhubbouldering.com {
+    reverse_proxy n8n:5678
+}

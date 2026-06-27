@@ -3,22 +3,36 @@ services:
     build: .
     container_name: bhub-engine
     restart: unless-stopped
-    # No published ports — internal only.
-    # n8n reaches it on the shared network at:  http://bhub-engine:8000
+    # internal only; n8n calls http://bhub-engine:8000
 
   n8n:
     image: n8nio/n8n:latest
     container_name: n8n
     restart: unless-stopped
-    ports:
-      - "5678:5678"
     environment:
+      - N8N_HOST=n8n.bhubbouldering.com
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - N8N_EDITOR_BASE_URL=https://n8n.bhubbouldering.com/
+      - WEBHOOK_URL=https://n8n.bhubbouldering.com/
       - GENERIC_TIMEZONE=Asia/Kuala_Lumpur
       - TZ=Asia/Kuala_Lumpur
-      # plain-http phase only; we switch this back on once HTTPS is in (C5)
-      - N8N_SECURE_COOKIE=false
     volumes:
       - n8n_data:/home/node/.n8n
 
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+
 volumes:
   n8n_data:
+  caddy_data:
+  caddy_config:
